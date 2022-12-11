@@ -1,0 +1,32 @@
+name: Release versioning
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [closed]
+
+permissions:
+  contents: write
+
+jobs:
+  bump_version:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    name: "Versioning project"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: "${{ secrets.VERSION_TOKEN }}"
+
+      - id: cz
+        name: Create bump and changelog
+        uses: commitizen-tools/commitizen-action@0.10.0
+        with:
+          github_token: ${{ secrets.VERSION_TOKEN }}
+          branch: main
+
+      - name: Print Version
+        run: echo "Bumped to version ${{ steps.cz.outputs.version }}"
