@@ -1,5 +1,5 @@
 # Enola Holmes
-
+This is [Sherlock](https://github.com/sherlock-project/sherlock)'s sister **Enola**, Modern shiny CLI tool written with Golang to help you: 🔎 Hunt down social media accounts by username across social networks
 
 ## Install 
 Minimum `go1.19` required.
