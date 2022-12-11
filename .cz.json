@@ -1,7 +1,7 @@
 {
   "commitizen": {
     "name": "cz_conventional_commits",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "tag_format": "v$major.$minor.$patch",
     "bump_message": "bump: $current_version -> $new_version [skip-ci]"
   }
