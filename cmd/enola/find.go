@@ -12,7 +12,7 @@ import (
 
 type responseMsg enola.Result
 
-func findAndShowResult(username, site string) {
+func findAndShowResult(username, site string, onlyFound bool) {
 	ctx := context.Background()
 	sh, err := enola.New(ctx)
 	if err != nil {
@@ -20,8 +20,9 @@ func findAndShowResult(username, site string) {
 	}
 
 	m := model{
-		list: list.New([]list.Item{}, NewDelegate(), 0, 0),
-		res:  sh.SetSite(site).Check(username),
+		list:             list.New([]list.Item{}, NewDelegate(), 0, 0),
+		res:              sh.SetSite(site).Check(username),
+		displayOnlyFound: onlyFound,
 	}
 
 	m.list.Title = "Socials"

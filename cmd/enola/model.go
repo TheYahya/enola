@@ -59,9 +59,10 @@ func (i item) Description() string { return "" }
 func (i item) FilterValue() string { return i.title }
 
 type model struct {
-	list     list.Model
-	res      <-chan enola.Result
-	resCount int
+	list             list.Model
+	res              <-chan enola.Result
+	resCount         int
+	displayOnlyFound bool
 }
 
 func (m *model) Init() tea.Cmd {
@@ -80,6 +81,10 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		h, v := docStyle.GetFrameSize()
 		m.list.SetSize(msg.Width-h, msg.Height-v)
 	case responseMsg:
+		if m.displayOnlyFound && !msg.Found {
+			return m, waitForActivity(m.res)
+		}
+
 		m.resCount++
 		m.list.InsertItem(m.resCount, item{title: msg.Name, desc: msg.URL, found: msg.Found})
 		return m, waitForActivity(m.res)

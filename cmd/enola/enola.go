@@ -8,6 +8,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var rootFlags struct {
+	site      string
+	onlyFound bool
+}
+
 var rootCmd = &cobra.Command{
 	Use:   "enola {username}",
 	Short: "A command-line tool to find username on websites",
@@ -19,8 +24,7 @@ var rootCmd = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		username := args[0]
-		siteFlag := cmd.Flag("site")
-		findAndShowResult(username, siteFlag.Value.String())
+		findAndShowResult(username, rootFlags.site, rootFlags.onlyFound)
 	},
 }
 
@@ -36,5 +40,6 @@ func Execute() error {
 }
 
 func init() {
-	rootCmd.Flags().StringP("site", "s", "", "to only search an specific site")
+	rootCmd.Flags().StringVarP(&rootFlags.site, "site", "s", "", "to only search an specific site")
+	rootCmd.Flags().BoolVar(&rootFlags.onlyFound, "only-found", false, "only show sites where the username was found")
 }
