@@ -4,7 +4,7 @@ This is [Sherlock](https://github.com/sherlock-project/sherlock)'s sister **Enol
 ## Install 
 Minimum `go1.19` required.
 ```go
-go install github.com/sherlock-project/enola/cmd/enola@latest
+go install github.com/theyahya/enola/cmd/enola@latest
 ```
 
 ## Usage
@@ -12,11 +12,11 @@ go install github.com/sherlock-project/enola/cmd/enola@latest
 enola {username}
 ```
 
-<img alt="Enola demo" src="https://github.com/sherlock-project/enola/blob/main/examples/demo.gif" width="600" />
+<img alt="Enola demo" src="https://github.com/theyahya/enola/blob/main/examples/demo.gif" width="600" />
 
 ## Contributing
 You can fork the repository, improve or fix some part of it and then send a pull requests. Or simply open and issue if there's a bug or you have a feature in mind.
 
 ## License
 
-This software is released under the [MIT](https://github.com/sherlock-project/enola/main/LICENSE) License.
+This software is released under the [MIT](https://github.com/theyahya/enola/main/LICENSE) License.

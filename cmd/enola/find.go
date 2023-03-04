@@ -7,7 +7,7 @@ import (
 
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/sherlock-project/enola"
+	"github.com/theyahya/enola"
 )
 
 type responseMsg enola.Result
