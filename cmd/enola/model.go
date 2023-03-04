@@ -6,7 +6,7 @@ import (
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/sherlock-project/enola"
+	"github.com/theyahya/enola"
 )
 
 var docStyle = lipgloss.NewStyle().Margin(1, 2)

@@ -1,4 +1,4 @@
-module github.com/sherlock-project/enola
+module github.com/theyahya/enola
 
 go 1.19
 
