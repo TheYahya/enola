@@ -19,4 +19,4 @@ You can fork the repository, improve or fix some part of it and then send a pull
 
 ## License
 
-This software is released under the [MIT](https://github.com/theyahya/enola/main/LICENSE) License.
+This software is released under the [MIT](https://github.com/TheYahya/enola/blob/main/LICENSE) License.
