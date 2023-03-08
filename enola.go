@@ -64,16 +64,18 @@ func (s *Enola) List() map[string]Website { return s.Data }
 
 func (s *Enola) Check(username string) <-chan Result {
 	ch := make(chan Result)
-	data := s.Data
+	data := map[string]Website{}
+
 	if s.Site != "" {
-		for k, v := range data {
-			if strings.EqualFold(k, s.Site) {
-				data = map[string]Website{
-					k: v,
-				}
-				break
+		for k, v := range s.Data {
+			if strings.Contains(strings.ToLower(k), strings.Trim(strings.ToLower(s.Site), " ")) {
+				data[k] = v
 			}
 		}
+	}
+
+	if len(data) == 0 {
+		data = s.Data
 	}
 
 	ctx := context.Background()
