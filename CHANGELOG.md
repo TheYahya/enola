@@ -1,3 +1,9 @@
+## v0.2.1 (2023-03-08)
+
+### Fix
+
+- **Enola**: Check all websites similar to the given entry
+
 ## v0.2.0 (2023-03-08)
 
 ### Feat
