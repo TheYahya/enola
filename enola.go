@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 	"time"
@@ -124,7 +124,7 @@ func (s *Enola) Check(username string) <-chan Result {
 					}
 					defer resp.Body.Close()
 
-					bodyBytes, err := ioutil.ReadAll(resp.Body)
+					bodyBytes, err := io.ReadAll(resp.Body)
 					if err != nil {
 						ch <- res
 						return
