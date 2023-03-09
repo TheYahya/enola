@@ -1,3 +1,9 @@
+## v0.2.2 (2023-03-09)
+
+### Refactor
+
+- **enola**: remove ioutil
+
 ## v0.2.1 (2023-03-08)
 
 ### Fix
