@@ -62,7 +62,7 @@ func (s *Enola) SetSite(site string) *Enola {
 func (s *Enola) ListCount() int           { return len(s.Data) }
 func (s *Enola) List() map[string]Website { return s.Data }
 
-func (s *Enola) Check(username string) <-chan Result {
+func (s *Enola) Check(username string) (<-chan Result, error) {
 	ch := make(chan Result)
 	data := map[string]Website{}
 
@@ -71,6 +71,11 @@ func (s *Enola) Check(username string) <-chan Result {
 			if strings.Contains(strings.ToLower(k), strings.Trim(strings.ToLower(s.Site), " ")) {
 				data[k] = v
 			}
+		}
+
+		// if site is not found in the list
+		if len(data) == 0 {
+			return nil, errors.New(ErrSiteNotFound)
 		}
 	}
 
@@ -147,5 +152,5 @@ func (s *Enola) Check(username string) <-chan Result {
 		}
 	}()
 
-	return ch
+	return ch, nil
 }

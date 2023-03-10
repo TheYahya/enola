@@ -19,9 +19,15 @@ func findAndShowResult(username, site string) {
 		panic(err)
 	}
 
+	resChan, err := sh.SetSite(site).Check(username)
+	if err != nil {
+		fmt.Println("Error running program:", err)
+		os.Exit(1)
+	}
+
 	m := model{
 		list: list.New([]list.Item{}, NewDelegate(), 0, 0),
-		res:  sh.SetSite(site).Check(username),
+		res:  resChan,
 	}
 
 	m.list.Title = "Socials"
