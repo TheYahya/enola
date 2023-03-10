@@ -1,3 +1,9 @@
+## v0.2.3 (2023-03-10)
+
+### Fix
+
+- **enola**: handle unsupported website
+
 ## v0.2.2 (2023-03-09)
 
 ### Refactor
