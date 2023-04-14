@@ -4,7 +4,6 @@ import (
 	"context"
 	_ "embed"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -41,11 +40,10 @@ type Result struct {
 var d []byte
 
 func New(ctx context.Context) (Enola, error) {
-	var err error
 	var data map[string]Website
-	err = json.Unmarshal(d, &data)
+	err := json.Unmarshal(d, &data)
 	if err != nil {
-		return Enola{}, errors.New(ErrDataFileIsNotAValidJson)
+		return Enola{}, fmt.Errorf("error: %v", ErrDataFileIsNotAValidJson)
 	}
 
 	return Enola{
@@ -75,7 +73,7 @@ func (s *Enola) Check(username string) (<-chan Result, error) {
 
 		// if site is not found in the list
 		if len(data) == 0 {
-			return nil, errors.New(ErrSiteNotFound)
+			return nil, fmt.Errorf("error: %v", ErrSiteNotFound)
 		}
 	}
 
