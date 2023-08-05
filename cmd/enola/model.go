@@ -124,8 +124,16 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		h, v := docStyle.GetFrameSize()
 		m.list.SetSize(msg.Width-h, msg.Height-v)
+    
+    
 	case responseMsg:
-		return m.updateList(msg)
+		m.resCount++
+		if msg.Found {
+			m.list.InsertItem(0, item{title: msg.Name, desc: msg.URL, found: msg.Found})
+			return m, waitForActivity(m.res)
+		}
+		m.list.InsertItem(m.resCount, item{title: msg.Name, desc: msg.URL, found: msg.Found})
+		return m, waitForActivity(m.res)
 	}
 
 	var cmd tea.Cmd
