@@ -1,3 +1,12 @@
+## v0.2.4 (2023-08-05)
+
+### Refactor
+
+- Clean up delegate file to improve readability
+- Clean up model.go file to improve readability!
+- Changed errors.New() to fmt.Errorf()
+- Remove unnecessary difined error.
+
 ## v0.2.3 (2023-03-10)
 
 ### Fix
