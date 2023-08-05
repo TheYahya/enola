@@ -11,17 +11,21 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "enola {username}",
 	Short: "A command-line tool to find username on websites",
-	Args: func(_ *cobra.Command, args []string) error {
-		if len(args) < 1 {
-			return errors.New("can't run without argument, give me a username")
-		}
-		return nil
-	},
-	Run: func(cmd *cobra.Command, args []string) {
-		username := args[0]
-		siteFlag := cmd.Flag("site")
-		findAndShowResult(username, siteFlag.Value.String())
-	},
+	Args:  validateArgs,
+	Run:   runCommand,
+}
+
+func validateArgs(cmd *cobra.Command, args []string) error {
+	if len(args) < 1 {
+		return errors.New("missing required argument: username")
+	}
+	return nil
+}
+
+func runCommand(cmd *cobra.Command, args []string) {
+	username := args[0]
+	siteFlag := cmd.Flag("site")
+	findAndShowResult(username, siteFlag.Value.String())
 }
 
 func main() {
@@ -36,5 +40,10 @@ func Execute() error {
 }
 
 func init() {
-	rootCmd.Flags().StringP("site", "s", "", "to only search an specific site")
+	rootCmd.Flags().StringP(
+		"site",
+		"s",
+		"",
+		"to only search an specific site",
+	)
 }

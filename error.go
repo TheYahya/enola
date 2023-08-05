@@ -1,5 +1,6 @@
 package enola
 
-const ErrNoDataFileExists = "err no data file exists"
-const ErrDataFileIsNotAValidJson = "err data file is not a valid json"
-const ErrSiteNotFound = "err requested site is not supported"
+const (
+	ErrDataFileIsNotAValidJson = "the data file cannot be read due to invalid JSON format"
+	ErrSiteNotFound            = "the requested site is not supported"
+)

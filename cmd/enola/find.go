@@ -21,20 +21,25 @@ func findAndShowResult(username, site string) {
 
 	resChan, err := sh.SetSite(site).Check(username)
 	if err != nil {
-		fmt.Println("Error running program:", err)
+		fmt.Println("Error running program: ", err)
 		os.Exit(1)
 	}
 
 	m := model{
-		list: list.New([]list.Item{}, NewDelegate(), 0, 0),
-		res:  resChan,
+		list: list.New(
+			[]list.Item{},
+			NewDelegate(),
+			0,
+			0,
+		),
+		res: resChan,
 	}
 
 	m.list.Title = "Socials"
 	p := tea.NewProgram(&m, tea.WithAltScreen())
 
 	if err := p.Start(); err != nil {
-		fmt.Println("Error running program:", err)
+		fmt.Println("Error running program: ", err)
 		os.Exit(1)
 	}
 }
