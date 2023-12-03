@@ -124,8 +124,6 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		h, v := docStyle.GetFrameSize()
 		m.list.SetSize(msg.Width-h, msg.Height-v)
-    
-    
 	case responseMsg:
 		m.resCount++
 		if msg.Found {
