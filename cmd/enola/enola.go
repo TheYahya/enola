@@ -3,7 +3,9 @@ package main
 import (
 	"errors"
 	"fmt"
+	"github.com/theyahya/enola"
 	"os"
+	"strconv"
 
 	"github.com/spf13/cobra"
 )
@@ -22,10 +24,27 @@ func validateArgs(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
+type elonaCommandOption struct {
+	site       string
+	outputPath string
+	printFound bool
+}
+
 func runCommand(cmd *cobra.Command, args []string) {
 	username := args[0]
-	siteFlag := cmd.Flag("site")
-	findAndShowResult(username, siteFlag.Value.String())
+
+	printFound, err := strconv.ParseBool(cmd.Flag("print-found").Value.String())
+	if err != nil {
+		fmt.Printf("error: %v", enola.ErrInvalidFlag)
+		os.Exit(1)
+	}
+	option := elonaCommandOption{
+		site:       cmd.Flag("site").Value.String(),
+		outputPath: cmd.Flag("output").Value.String(),
+		printFound: printFound,
+	}
+
+	findAndShowResult(username, &option)
 }
 
 func main() {
@@ -45,5 +64,19 @@ func init() {
 		"s",
 		"",
 		"to only search an specific site",
+	)
+
+	rootCmd.Flags().StringP(
+		"output",
+		"o",
+		"",
+		"relative path of output folder",
+	)
+
+	rootCmd.Flags().BoolP(
+		"print-found",
+		"p",
+		false,
+		"output sites where the username was found",
 	)
 }
