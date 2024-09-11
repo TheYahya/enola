@@ -29,7 +29,7 @@ func NewDelegate() list.DefaultDelegate {
 func NewItemStyles() (style list.DefaultItemStyles) {
 	style.NormalTitle = lipgloss.NewStyle().Padding(0, 0, 0, 1)
 
-	style.NormalDesc = style.NormalTitle.Copy().
+	style.NormalDesc = style.NormalTitle.
 		Foreground(lipgloss.AdaptiveColor{
 			Light: NormalDescStyleLightColor,
 			Dark:  NormalDescStyleDarkColor,
@@ -44,7 +44,7 @@ func NewItemStyles() (style list.DefaultItemStyles) {
 			Dark:  SelectedBorderStyleDarkColor,
 		}).Padding(0, 0, 0, 0)
 
-	style.SelectedDesc = style.SelectedTitle.Copy().
+	style.SelectedDesc = style.SelectedTitle.
 		Foreground(lipgloss.AdaptiveColor{
 			Light: SelectedDescStyleLightColor,
 			Dark:  SelectedDescStyleDarkColor,
@@ -56,7 +56,7 @@ func NewItemStyles() (style list.DefaultItemStyles) {
 			Dark:  DimmedTitleStyleDarkColor,
 		}).Padding(0, 0, 0, 1)
 
-	style.DimmedDesc = style.DimmedTitle.Copy().
+	style.DimmedDesc = style.DimmedTitle.
 		Foreground(lipgloss.AdaptiveColor{
 			Light: DimmedDescStyleLightColor,
 			Dark:  DimmedDescStyleDarkColor,
