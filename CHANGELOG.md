@@ -1,3 +1,9 @@
+## v0.3.0 (2024-09-11)
+
+### Feat
+
+- add Release to workflow
+
 ## v0.2.4 (2023-08-05)
 
 ### Refactor
