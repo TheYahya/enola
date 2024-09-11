@@ -64,6 +64,6 @@ func init() {
 		"output",
 		"o",
 		"",
-		"output path, supports json and csv, eg: C:\\test\\test.json",
+		"output path, supports json and csv, eg: ./enola.json",
 	)
 }
