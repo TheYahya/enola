@@ -23,3 +23,10 @@ jobs:
           github_token: ${{ secrets.VERSION_TOKEN }}
       - name: Print Version
         run: echo "Bumped to version ${{ steps.cz.outputs.version }}"
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.REVISION }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.VERSION_TOKEN }}
+
