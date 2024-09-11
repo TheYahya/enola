@@ -1,3 +1,9 @@
+## v0.3.1 (2024-09-11)
+
+### Fix
+
+- remove deprecated code
+
 ## v0.3.0 (2024-09-11)
 
 ### Feat
