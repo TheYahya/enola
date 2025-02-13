@@ -94,6 +94,7 @@ jobs:
         uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
+          workdir: 'cmd/enola'
           # 'latest', 'nightly', or a semver
           version: "~> v2"
           args: release --clean --verbose --config /tmp/goreleaser-github.yaml
