@@ -1,0 +1,128 @@
+name: Release
+
+on:
+  pull_request:
+  push:
+    # run only against tags
+    tags:
+      - "*"
+
+permissions:
+  contents: write
+  packages: write
+  issues: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.22.0
+      - name: Install dependencies
+        run: go mod download
+      - name: Run tests
+        run: go test -v ./... -coverprofile=./cover.out -covermode=atomic -coverpkg=./...
+
+  goreleaser:
+    needs:
+      - test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: Release config
+        run: |
+          cat << EOF > /tmp/goreleaser-github.yaml
+          project_name: stampy
+          version: 2
+          builds:
+            - env: [CGO_ENABLED=0]
+              goos:
+                - linux
+                - windows
+                - darwin
+                - freebsd
+                - openbsd
+                - android
+              goarch:
+                - 386
+                - amd64
+                - arm
+                - arm64
+          nfpms:
+            -
+              maintainer: Jelloeater <jello@jelloeater.me>
+              bindir: /usr/local/bin
+              description: Copy formatted timestamp to system clipboard
+              homepage: https://github.com/Jelloeater/stampy
+              license: MIT
+              formats:
+                - deb
+                - rpm
+                - apk
+                - termux.deb
+                - archlinux
+                - ipk
+
+          release:
+            draft: false # If set to true, will not auto-publish the release.
+            replace_existing_draft: true
+            replace_existing_artifacts: true
+            target_commitish: "{{ .Commit }}"
+            prerelease: auto
+
+            make_latest: true
+            mode: replace
+            include_meta: true
+
+          EOF
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          # 'latest', 'nightly', or a semver
+          version: "~> v2"
+          args: release --clean --verbose --config /tmp/goreleaser-github.yaml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
+
+      - name: List Dist
+        run: |
+          sudo apt-get install tree -y
+          tree dist
+
+      - name: Upload .deb artifact x86
+        uses: actions/upload-artifact@v3
+        with:
+          name: deb-package
+          path: dist/*amd64.deb
+      - name: Upload .deb artifact ARM
+        uses: actions/upload-artifact@v3
+        with:
+          name: deb-package-arm
+          path: dist/*arm64.deb
+      - name: Upload .rpm artifact x86
+        uses: actions/upload-artifact@v3
+        with:
+          name: rpm-package
+          path: dist/*amd64.rpm
+      - name: Upload .apk artifact x86
+        uses: actions/upload-artifact@v3
+        with:
+          name: apk-package
+          path: dist/*amd64.apk
