@@ -64,10 +64,10 @@ jobs:
                 - arm64
           nfpms:
             -
-              maintainer: Jelloeater <jello@jelloeater.me>
+              maintainer: Yahya SayadArbabi <yahya.arbabi@gmail.com>
               bindir: /usr/local/bin
-              description: Copy formatted timestamp to system clipboard
-              homepage: https://github.com/Jelloeater/stampy
+              description: This is Sherlock's sister, Modern shiny CLI tool written with Golang
+              homepage: https://github.com/TheYahya/enola
               license: MIT
               formats:
                 - deb
@@ -99,7 +99,6 @@ jobs:
           args: release --clean --verbose --config /tmp/goreleaser-github.yaml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
 
       - name: List Dist
         run: |
