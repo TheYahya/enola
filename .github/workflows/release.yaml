@@ -101,9 +101,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: List Dist
-        run: |
-          sudo apt-get install tree -y
-          tree dist
+        run: ls dist
 
       - name: Upload .deb artifact x86
         uses: actions/upload-artifact@v4
