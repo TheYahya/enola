@@ -56,7 +56,6 @@ jobs:
                 - darwin
                 - freebsd
                 - openbsd
-                - android
               goarch:
                 - 386
                 - amd64
