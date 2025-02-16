@@ -14,6 +14,17 @@ enola {username}
 
 <img alt="Enola demo" src="https://github.com/theyahya/enola/blob/main/examples/demo.gif" width="600" />
 
+### Using Docker
+Build the image
+```bash
+docker build -t enola .
+```
+
+Run
+```bash
+docker run --rm -it enola {username}
+```
+
 ## Contributing
 You can fork the repository, improve or fix some part of it and then send a pull requests. Or simply open and issue if there's a bug or you have a feature in mind.
 
