@@ -1,0 +1,100 @@
+name: Release
+
+on:
+  push:
+    # run only against tags
+    tags:
+      - "*"
+
+permissions:
+  contents: write
+  packages: write
+  issues: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.23.0
+      - name: Install dependencies
+        run: go mod download
+      - name: Run tests
+        run: go test -v ./... -coverprofile=./cover.out -covermode=atomic -coverpkg=./...
+
+  goreleaser:
+    needs:
+      - test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: Release config
+        run: |
+          cat << EOF > /tmp/goreleaser-github.yaml
+          project_name: enola
+          version: 2
+          builds:
+            - env: [CGO_ENABLED=0]
+              goos:
+                - linux
+                - windows
+                - darwin
+                - freebsd
+                - openbsd
+              goarch:
+                - 386
+                - amd64
+                - arm
+                - arm64
+          nfpms:
+            -
+              maintainer: Yahya SayadArbabi <yahya.arbabi@gmail.com>
+              bindir: /usr/local/bin
+              description: This is Sherlock's sister, Modern shiny CLI tool written with Golang
+              homepage: https://github.com/TheYahya/enola
+              license: MIT
+              formats:
+                - deb
+                - rpm
+                - apk
+                - termux.deb
+                - archlinux
+                - ipk
+
+          release:
+            draft: false # If set to true, will not auto-publish the release.
+            replace_existing_draft: true
+            replace_existing_artifacts: true
+            target_commitish: "{{ .Commit }}"
+            prerelease: auto
+
+            make_latest: true
+            mode: replace
+            include_meta: true
+
+          EOF
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          workdir: 'cmd/enola'
+          # 'latest', 'nightly', or a semver
+          version: "~> v2"
+          args: release --clean --verbose --config /tmp/goreleaser-github.yaml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
