@@ -17,3 +17,5 @@ vendor/
 # IDE files
 .idea/
 .vscode/
+/CLAUDE.md
+/enola
