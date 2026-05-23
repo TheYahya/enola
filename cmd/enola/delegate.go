@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/charmbracelet/bubbles/list"
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/bubbles/v2/list"
+	"charm.land/lipgloss/v2"
 )
 
 const (
@@ -18,49 +18,39 @@ const (
 	DimmedDescStyleDarkColor      = "#4D4D4D"
 )
 
-func NewDelegate() list.DefaultDelegate {
+func NewDelegate(hasDarkBg bool) list.DefaultDelegate {
 	delegate := list.NewDefaultDelegate()
 	delegate.ShowDescription = false
-	delegate.Styles = NewItemStyles()
+	delegate.Styles = NewItemStyles(hasDarkBg)
 
 	return delegate
 }
 
-func NewItemStyles() (style list.DefaultItemStyles) {
+func NewItemStyles(hasDarkBg bool) (style list.DefaultItemStyles) {
+	ld := lipgloss.LightDark(hasDarkBg)
+
 	style.NormalTitle = lipgloss.NewStyle().Padding(0, 0, 0, 1)
 
 	style.NormalDesc = style.NormalTitle.
-		Foreground(lipgloss.AdaptiveColor{
-			Light: NormalDescStyleLightColor,
-			Dark:  NormalDescStyleDarkColor,
-		}).
+		Foreground(ld(lipgloss.Color(NormalDescStyleLightColor), lipgloss.Color(NormalDescStyleDarkColor))).
 		Underline(true).
 		Padding(0, 0, 0, 2)
 
 	style.SelectedTitle = lipgloss.NewStyle().
 		Border(lipgloss.ThickBorder(), false, false, false, true).
-		BorderForeground(lipgloss.AdaptiveColor{
-			Light: SelectedBorderStyleLightColor,
-			Dark:  SelectedBorderStyleDarkColor,
-		}).Padding(0, 0, 0, 0)
+		BorderForeground(ld(lipgloss.Color(SelectedBorderStyleLightColor), lipgloss.Color(SelectedBorderStyleDarkColor))).
+		Padding(0, 0, 0, 0)
 
 	style.SelectedDesc = style.SelectedTitle.
-		Foreground(lipgloss.AdaptiveColor{
-			Light: SelectedDescStyleLightColor,
-			Dark:  SelectedDescStyleDarkColor,
-		}).Underline(true).Padding(0, 0, 0, 1)
+		Foreground(ld(lipgloss.Color(SelectedDescStyleLightColor), lipgloss.Color(SelectedDescStyleDarkColor))).
+		Underline(true).Padding(0, 0, 0, 1)
 
 	style.DimmedTitle = lipgloss.NewStyle().
-		Foreground(lipgloss.AdaptiveColor{
-			Light: DimmedTitleStyleLightColor,
-			Dark:  DimmedTitleStyleDarkColor,
-		}).Padding(0, 0, 0, 1)
+		Foreground(ld(lipgloss.Color(DimmedTitleStyleLightColor), lipgloss.Color(DimmedTitleStyleDarkColor))).
+		Padding(0, 0, 0, 1)
 
 	style.DimmedDesc = style.DimmedTitle.
-		Foreground(lipgloss.AdaptiveColor{
-			Light: DimmedDescStyleLightColor,
-			Dark:  DimmedDescStyleDarkColor,
-		})
+		Foreground(ld(lipgloss.Color(DimmedDescStyleLightColor), lipgloss.Color(DimmedDescStyleDarkColor)))
 
 	return style
 }

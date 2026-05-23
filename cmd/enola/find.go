@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/charmbracelet/bubbles/list"
-	tea "github.com/charmbracelet/bubbletea"
+	"charm.land/bubbles/v2/list"
+	tea "charm.land/bubbletea/v2"
 	"github.com/theyahya/enola"
 	"github.com/theyahya/enola/cmd/exporter"
 )
@@ -29,7 +29,7 @@ func findAndShowResult(options cmdOptions) {
 	m := model{
 		list: list.New(
 			[]list.Item{},
-			NewDelegate(),
+			NewDelegate(false),
 			0,
 			0,
 		),
@@ -37,7 +37,7 @@ func findAndShowResult(options cmdOptions) {
 	}
 
 	m.list.Title = "Socials"
-	p := tea.NewProgram(&m, tea.WithAltScreen())
+	p := tea.NewProgram(&m)
 
 	if _, err := p.Run(); err != nil {
 		fmt.Println("Error running program: ", err)

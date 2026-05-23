@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 
-	"github.com/charmbracelet/bubbles/list"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/bubbles/v2/list"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 	"github.com/theyahya/enola"
 )
 
@@ -27,76 +27,42 @@ const (
 var docStyle = lipgloss.NewStyle().Margin(1, 2)
 
 type item struct {
-	title string
-	desc  string
-	found bool
+	title     string
+	desc      string
+	found     bool
+	hasDarkBg bool
 }
 
 func (i item) Title() string {
-	status, title, desc := i.renderItem(NewItemStyles().NormalTitle.Copy())
+	status, title, desc := i.renderItem(NewItemStyles(i.hasDarkBg).NormalTitle)
 	return fmt.Sprintf("%s %s: %s", status, title, desc)
 }
 
 func (i item) renderItem(style lipgloss.Style) (string, string, string) {
-	var status, title, desc string
 	if i.found {
-		status, title, desc = i.renderFoundedItem(style)
-	} else {
-		status, title, desc = i.renderNotFoundedItem(style)
+		return i.renderFoundedItem(style)
 	}
-	return status, title, desc
+	return i.renderNotFoundedItem(style)
 }
 
 func (i item) renderNotFoundedItem(style lipgloss.Style) (string, string, string) {
-	closeStyle := style.Copy().
-		Foreground(lipgloss.AdaptiveColor{
-			Light: CloseStyleLightColor,
-			Dark:  CloseStyleDarkColor,
-		})
+	ld := lipgloss.LightDark(i.hasDarkBg)
 
-	titleStyle := style.Copy().
-		Foreground(lipgloss.AdaptiveColor{
-			Light: TitleNotFoundedLightColor,
-			Dark:  TitleNotFoundedDarkColor,
-		}).Padding(0, 0, 0, 0)
+	closeStyle := style.Foreground(ld(lipgloss.Color(CloseStyleLightColor), lipgloss.Color(CloseStyleDarkColor)))
+	titleStyle := style.Foreground(ld(lipgloss.Color(TitleNotFoundedLightColor), lipgloss.Color(TitleNotFoundedDarkColor))).Padding(0, 0, 0, 0)
+	notFoundStyle := style.Foreground(ld(lipgloss.Color(NotFoundLightColor), lipgloss.Color(NotFoundDarkColor))).Padding(0, 0, 0, 0)
 
-	notFoundStyle := style.Copy().
-		Foreground(lipgloss.AdaptiveColor{
-			Light: NotFoundLightColor,
-			Dark:  NotFoundDarkColor,
-		}).Padding(0, 0, 0, 0)
-
-	status := closeStyle.Render("✗")
-	title := titleStyle.Render(i.title)
-	desc := notFoundStyle.Render("Not found!")
-
-	return status, title, desc
+	return closeStyle.Render("✗"), titleStyle.Render(i.title), notFoundStyle.Render("Not found!")
 }
 
 func (i item) renderFoundedItem(style lipgloss.Style) (string, string, string) {
-	checkStyle := style.Copy().
-		Foreground(lipgloss.AdaptiveColor{
-			Light: CheckStyleLightColor,
-			Dark:  CheckStyleDarkColor,
-		})
+	ld := lipgloss.LightDark(i.hasDarkBg)
 
-	titleStyle := style.Copy().
-		Foreground(lipgloss.AdaptiveColor{
-			Light: TitleStyleLightColor,
-			Dark:  TitleStyleDarkColor,
-		}).Bold(true).Padding(0, 0, 0, 0)
+	checkStyle := style.Foreground(ld(lipgloss.Color(CheckStyleLightColor), lipgloss.Color(CheckStyleDarkColor)))
+	titleStyle := style.Foreground(ld(lipgloss.Color(TitleStyleLightColor), lipgloss.Color(TitleStyleDarkColor))).Bold(true).Padding(0, 0, 0, 0)
+	descStyle := NewItemStyles(i.hasDarkBg).NormalDesc.Foreground(ld(lipgloss.Color(DescStyleLightColor), lipgloss.Color(DescStyleDarkColor))).Padding(0, 0, 0, 0)
 
-	descStyle := NewItemStyles().NormalDesc.Copy().
-		Foreground(lipgloss.AdaptiveColor{
-			Light: DescStyleLightColor,
-			Dark:  DescStyleDarkColor,
-		}).Padding(0, 0, 0, 0)
-
-	check := checkStyle.Render("✓")
-	title := titleStyle.Render(i.title)
-	desc := descStyle.Render(i.desc)
-
-	return check, title, desc
+	return checkStyle.Render("✓"), titleStyle.Render(i.title), descStyle.Render(i.desc)
 }
 
 func (i item) Description() string { return i.desc }
@@ -104,35 +70,39 @@ func (i item) Description() string { return i.desc }
 func (i item) FilterValue() string { return i.title }
 
 type model struct {
-	list     list.Model
-	res      <-chan enola.Result
-	resCount int
+	list      list.Model
+	res       <-chan enola.Result
+	resCount  int
+	hasDarkBg bool
 }
 
 func (m *model) Init() tea.Cmd {
 	return tea.Batch(
 		waitForActivity(m.res),
+		tea.RequestBackgroundColor,
 	)
 }
 
 func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
-	case tea.KeyMsg:
+	case tea.KeyPressMsg:
 		if msg.String() == "ctrl+c" {
 			return m, tea.Quit
 		}
+	case tea.BackgroundColorMsg:
+		m.hasDarkBg = msg.IsDark()
+		m.list.SetDelegate(NewDelegate(m.hasDarkBg))
 	case tea.WindowSizeMsg:
 		h, v := docStyle.GetFrameSize()
 		m.list.SetSize(msg.Width-h, msg.Height-v)
-    
-    
 	case responseMsg:
 		m.resCount++
+		it := item{title: msg.Name, desc: msg.URL, found: msg.Found, hasDarkBg: m.hasDarkBg}
 		if msg.Found {
-			m.list.InsertItem(0, item{title: msg.Name, desc: msg.URL, found: msg.Found})
-			return m, waitForActivity(m.res)
+			m.list.InsertItem(0, it)
+		} else {
+			m.list.InsertItem(m.resCount, it)
 		}
-		m.list.InsertItem(m.resCount, item{title: msg.Name, desc: msg.URL, found: msg.Found})
 		return m, waitForActivity(m.res)
 	}
 
@@ -144,15 +114,18 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m *model) updateList(msg responseMsg) (tea.Model, tea.Cmd) {
 	m.resCount++
 	m.list.InsertItem(m.resCount, item{
-		title: msg.Name,
-		desc:  msg.URL,
-		found: msg.Found,
+		title:     msg.Name,
+		desc:      msg.URL,
+		found:     msg.Found,
+		hasDarkBg: m.hasDarkBg,
 	})
 	return m, waitForActivity(m.res)
 }
 
-func (m *model) View() string {
-	return docStyle.Render(m.list.View())
+func (m *model) View() tea.View {
+	v := tea.NewView(docStyle.Render(m.list.View()))
+	v.AltScreen = true
+	return v
 }
 
 func waitForActivity(sub <-chan enola.Result) tea.Cmd {
