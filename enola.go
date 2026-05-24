@@ -16,12 +16,12 @@ import (
 const RequestTimeout time.Duration = time.Second * 20
 
 type Website struct {
-	ErrorType         string      `json:"errorType"`
-	ErrorMessage      interface{} `json:"errorMsg"`
-	URL               string      `json:"url"`
-	UrlMain           string      `json:"urlMain"`
-	UsernameClaimed   string      `json:"username_claimed"`
-	UsernameUnclaimed string      `json:"username_unclaimed"`
+	ErrorType         string `json:"errorType"`
+	ErrorMessage      any    `json:"errorMsg"`
+	URL               string `json:"url"`
+	UrlMain           string `json:"urlMain"`
+	UsernameClaimed   string `json:"username_claimed"`
+	UsernameUnclaimed string `json:"username_unclaimed"`
 }
 
 type Enola struct {
