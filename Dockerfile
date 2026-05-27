@@ -9,5 +9,5 @@ WORKDIR /tmp/app/cmd/enola
 RUN go build -o ./enola .
 
 FROM  alpine:3.21
-COPY --from=build_base /tmp/app/cmd/enola/enola /app/enola
+COPY --from=build_base "/tmp/app/cmd/enola/enola" "/app/enola"
 ENTRYPOINT ["/app/enola"]
