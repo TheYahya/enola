@@ -2,8 +2,8 @@
 This is [Sherlock](https://github.com/sherlock-project/sherlock)'s sister **Enola**, Modern shiny CLI tool written with Golang to help you: 🔎 Hunt down social media accounts by username across social networks
 
 ## Install 
-Minimum `go1.23` required.
-```go
+Minimum `go1.26` required.
+```bash
 go install github.com/theyahya/enola/cmd/enola@latest
 ```
 
@@ -26,7 +26,7 @@ docker run --rm -it enola {username}
 ```
 
 ## Contributing
-You can fork the repository, improve or fix some part of it and then send a pull requests. Or simply open and issue if there's a bug or you have a feature in mind.
+You can fork the repository, improve or fix some part of it and then send a pull requests. Or simply open and issue if there's a bug, or you have a feature in mind.
 
 ## License
 

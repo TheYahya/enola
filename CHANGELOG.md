@@ -29,7 +29,7 @@
 - Clean up delegate file to improve readability
 - Clean up model.go file to improve readability!
 - Changed errors.New() to fmt.Errorf()
-- Remove unnecessary difined error.
+- Remove unnecessary defined error.
 
 ## v0.2.3 (2023-03-10)
 
@@ -53,14 +53,14 @@
 
 ### Feat
 
-- **Youtube-handle**: add Youtube handle support
+- **Youtube-handle**: add YouTube handle support
 
 ## v0.1.3 (2023-03-04)
 
 ### Fix
 
 - **path**: fix project path
-- **demo**: fix gif demo speed
+- **demo**: fix GIF demo speed
 
 ## v0.1.2 (2022-12-11)
 
