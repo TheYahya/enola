@@ -21,7 +21,7 @@ var rootCmd = &cobra.Command{
 	Run:   runCommand,
 }
 
-func validateArgs(cmd *cobra.Command, args []string) error {
+func validateArgs(_ *cobra.Command, args []string) error {
 	if len(args) < 1 {
 		return errors.New("missing required argument: username")
 	}

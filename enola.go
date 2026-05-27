@@ -13,7 +13,7 @@ import (
 	"golang.org/x/sync/semaphore"
 )
 
-const RequestTimeout time.Duration = time.Second * 20
+const RequestTimeout = time.Second * 20
 
 type Website struct {
 	ErrorType         string `json:"errorType"`
@@ -107,7 +107,9 @@ func (s *Enola) Check(username string) (<-chan Result, error) {
 						ch <- res
 						return
 					}
-					resp.Body.Close()
+					if err = resp.Body.Close(); err != nil {
+						return
+					}
 
 					if resp.StatusCode == http.StatusOK {
 						res.Found = true
@@ -125,7 +127,11 @@ func (s *Enola) Check(username string) (<-chan Result, error) {
 						ch <- res
 						return
 					}
-					defer resp.Body.Close()
+					defer func() {
+						if err := resp.Body.Close(); err != nil {
+							return
+						}
+					}()
 
 					bodyBytes, err := io.ReadAll(resp.Body)
 					if err != nil {
