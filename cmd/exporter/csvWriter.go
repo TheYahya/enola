@@ -16,7 +16,11 @@ func (writer CsvWriter) Write() {
 	if err != nil {
 		return
 	}
-	defer file.Close()
+	defer func() {
+		if err := file.Close(); err != nil {
+			return
+		}
+	}()
 
 	csvWriter := csv.NewWriter(file)
 	defer csvWriter.Flush()

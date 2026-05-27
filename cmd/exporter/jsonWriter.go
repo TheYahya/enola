@@ -15,7 +15,11 @@ func (writer JsonWriter) Write() {
 	if err != nil {
 		return
 	}
-	defer file.Close()
+	defer func() {
+		if err := file.Close(); err != nil {
+			return
+		}
+	}()
 
 	encoder := json.NewEncoder(file)
 	encoder.SetIndent("", "  ")
