@@ -1,3 +1,9 @@
+## v0.4.2 (2026-05-28)
+
+### Perf
+
+- **data**: update data.json to have better username checks with less errors
+
 ## v0.4.1 (2026-05-27)
 
 ### Refactor
