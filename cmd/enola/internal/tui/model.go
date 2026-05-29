@@ -1,7 +1,8 @@
-package main
+package tui
 
 import (
 	"fmt"
+	"os"
 
 	"charm.land/bubbles/v2/list"
 	tea "charm.land/bubbletea/v2"
@@ -26,26 +27,33 @@ const (
 
 var docStyle = lipgloss.NewStyle().Margin(1, 2)
 
-type item struct {
+// Item is a TUI list row returned after the scan completes.
+type Item struct {
+	Title string
+	URL   string
+	Found bool
+}
+
+type listItem struct {
 	title     string
 	desc      string
 	found     bool
 	hasDarkBg bool
 }
 
-func (i item) Title() string {
+func (i listItem) Title() string {
 	status, title, desc := i.renderItem(NewItemStyles(i.hasDarkBg).NormalTitle)
 	return fmt.Sprintf("%s %s: %s", status, title, desc)
 }
 
-func (i item) renderItem(style lipgloss.Style) (string, string, string) {
+func (i listItem) renderItem(style lipgloss.Style) (string, string, string) {
 	if i.found {
 		return i.renderFoundedItem(style)
 	}
 	return i.renderNotFoundedItem(style)
 }
 
-func (i item) renderNotFoundedItem(style lipgloss.Style) (string, string, string) {
+func (i listItem) renderNotFoundedItem(style lipgloss.Style) (string, string, string) {
 	ld := lipgloss.LightDark(i.hasDarkBg)
 
 	closeStyle := style.Foreground(ld(lipgloss.Color(CloseStyleLightColor), lipgloss.Color(CloseStyleDarkColor)))
@@ -55,7 +63,7 @@ func (i item) renderNotFoundedItem(style lipgloss.Style) (string, string, string
 	return closeStyle.Render("✗"), titleStyle.Render(i.title), notFoundStyle.Render("Not found!")
 }
 
-func (i item) renderFoundedItem(style lipgloss.Style) (string, string, string) {
+func (i listItem) renderFoundedItem(style lipgloss.Style) (string, string, string) {
 	ld := lipgloss.LightDark(i.hasDarkBg)
 
 	checkStyle := style.Foreground(ld(lipgloss.Color(CheckStyleLightColor), lipgloss.Color(CheckStyleDarkColor)))
@@ -65,61 +73,54 @@ func (i item) renderFoundedItem(style lipgloss.Style) (string, string, string) {
 	return checkStyle.Render("✓"), titleStyle.Render(i.title), descStyle.Render(i.desc)
 }
 
-func (i item) Description() string { return i.desc }
+func (i listItem) Description() string { return i.desc }
+func (i listItem) FilterValue() string { return i.title }
 
-func (i item) FilterValue() string { return i.title }
+type responseMsg enola.Result
+type doneMsg struct{}
 
 type model struct {
 	list      list.Model
 	res       <-chan enola.Result
 	resCount  int
 	hasDarkBg bool
+	done      bool
+	items     []Item
 }
 
 func (m *model) Init() tea.Cmd {
-	return tea.Batch(
-		waitForActivity(m.res),
-		tea.RequestBackgroundColor,
-	)
+	return waitForActivity(m.res)
 }
 
 func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyPressMsg:
-		if msg.String() == "ctrl+c" {
+		switch msg.String() {
+		case "ctrl+c", "q", "esc":
 			return m, tea.Quit
 		}
-	case tea.BackgroundColorMsg:
-		m.hasDarkBg = msg.IsDark()
-		m.list.SetDelegate(NewDelegate(m.hasDarkBg))
 	case tea.WindowSizeMsg:
 		h, v := docStyle.GetFrameSize()
 		m.list.SetSize(msg.Width-h, msg.Height-v)
 	case responseMsg:
 		m.resCount++
-		it := item{title: msg.Name, desc: msg.URL, found: msg.Found, hasDarkBg: m.hasDarkBg}
+		it := listItem{title: msg.Name, desc: msg.URL, found: msg.Found, hasDarkBg: m.hasDarkBg}
+		m.items = append(m.items, Item{Title: msg.Name, URL: msg.URL, Found: msg.Found})
 		if msg.Found {
 			m.list.InsertItem(0, it)
 		} else {
 			m.list.InsertItem(m.resCount, it)
 		}
 		return m, waitForActivity(m.res)
+	case doneMsg:
+		m.done = true
+		m.list.Title = "Socials (complete — press q to exit)"
+		return m, nil
 	}
 
 	var cmd tea.Cmd
 	m.list, cmd = m.list.Update(msg)
 	return m, cmd
-}
-
-func (m *model) updateList(msg responseMsg) (tea.Model, tea.Cmd) {
-	m.resCount++
-	m.list.InsertItem(m.resCount, item{
-		title:     msg.Name,
-		desc:      msg.URL,
-		found:     msg.Found,
-		hasDarkBg: m.hasDarkBg,
-	})
-	return m, waitForActivity(m.res)
 }
 
 func (m *model) View() tea.View {
@@ -130,6 +131,32 @@ func (m *model) View() tea.View {
 
 func waitForActivity(sub <-chan enola.Result) tea.Cmd {
 	return func() tea.Msg {
-		return responseMsg(<-sub)
+		res, ok := <-sub
+		if !ok {
+			return doneMsg{}
+		}
+		return responseMsg(res)
 	}
+}
+
+// Run displays results in the TUI and returns collected items when finished.
+func Run(results <-chan enola.Result) ([]Item, error) {
+	hasDarkBg := lipgloss.HasDarkBackground(os.Stdin, os.Stdout)
+	m := model{
+		list: list.New(
+			[]list.Item{},
+			NewDelegate(hasDarkBg),
+			0,
+			0,
+		),
+		res:       results,
+		hasDarkBg: hasDarkBg,
+	}
+	m.list.Title = "Socials"
+
+	p := tea.NewProgram(&m)
+	if _, err := p.Run(); err != nil {
+		return nil, err
+	}
+	return m.items, nil
 }

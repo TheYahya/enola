@@ -29,28 +29,19 @@ func validateArgs(_ *cobra.Command, args []string) error {
 }
 
 func runCommand(cmd *cobra.Command, args []string) {
-	username := args[0]
-	siteFlag := cmd.Flag("site")
-	outputPath := cmd.Flag("output")
-
 	options := cmdOptions{
-		username:   username,
-		site:       siteFlag.Value.String(),
-		outputPath: outputPath.Value.String(),
+		username:   args[0],
+		site:       cmd.Flag("site").Value.String(),
+		outputPath: cmd.Flag("output").Value.String(),
 	}
-
 	findAndShowResult(options)
 }
 
 func main() {
-	if err := Execute(); err != nil {
+	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-}
-
-func Execute() error {
-	return rootCmd.Execute()
 }
 
 func init() {
