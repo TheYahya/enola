@@ -1,4 +1,4 @@
-package main
+package tui
 
 import (
 	"charm.land/bubbles/v2/list"
@@ -22,7 +22,6 @@ func NewDelegate(hasDarkBg bool) list.DefaultDelegate {
 	delegate := list.NewDefaultDelegate()
 	delegate.ShowDescription = false
 	delegate.Styles = NewItemStyles(hasDarkBg)
-
 	return delegate
 }
 

@@ -6,8 +6,10 @@ require (
 	charm.land/bubbles/v2 v2.1.0
 	charm.land/bubbletea/v2 v2.0.6
 	charm.land/lipgloss/v2 v2.0.3
+	github.com/dlclark/regexp2 v1.12.0
 	github.com/spf13/cobra v1.10.2
 	golang.org/x/sync v0.20.0
+	golang.org/x/term v0.43.0
 )
 
 require (
